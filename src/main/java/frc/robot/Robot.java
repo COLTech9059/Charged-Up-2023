@@ -1,12 +1,20 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
-// test
+
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.revrobotics.RelativeEncoder;
+
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -15,6 +23,21 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
+
+  private DifferentialDrive HamsterDrive;
+  public Joystick LeftJoystick;
+  public Joystick RightJoystick;
+
+  private RelativeEncoder LeftPrimaryEncoder;
+  private RelativeEncoder LeftFollowerEncoder;
+  private RelativeEncoder RightPrimaryEncoder;
+  private RelativeEncoder RightFollowerEncoder;
+  
+  private CANSparkMax LeftPrimary;
+  private CANSparkMax LeftFollower;
+  private CANSparkMax RightPrimary;
+  private CANSparkMax RightFollower;
+  
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
@@ -25,8 +48,40 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
+
+  //The ports may change later
+  LeftPrimary = new CANSparkMax(1, kBrushed);
+  LeftFollower = new CANSparkMax(2, kBrushed);
+  RightPrimary = new CANSparkMax(3, kBrushed);
+  RightFollower = new CANSparkMax(4, kBrushed);
+
+  LeftPrimary.restoreFactoryDefaults();
+  LeftFollower.restoreFactoryDefaults();
+  RightPrimary.restoreFactoryDefaults();
+  RightFollower.restoreFactoryDefaults();
+
+  LeftFollower.Follow(LeftPrimary);
+  RightFollower.Follow(RightPrimary);
+
+  LeftPrimaryEncoder = LeftPrimary.getEncoder();
+  LeftFollowerEncoder = LeftFollower.getEncoder();    
+  RightPrimaryEncoder = RightPrimary.getEncoder();
+  RightFollowerEncoder = RightFollower.getEncoder();
+
+  LeftPrimary.setInverted(true); //This will change if it is on the wrong side
+    
+  DifferentialDrive HamsterDrive = new DifferentialDrive(LeftPrimary, RightPrimary);
+
+  Joystick LeftJoystick = new Joystick(5);
+  Joystick RightJoystick = new Joystick(6);
+    
+  public double LeftY = LeftJoystick.getY;
+
+  public double RightY = RightJoystick.getY; 
+  
+    
+  // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+  // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
   }
 
@@ -81,7 +136,18 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+
+  SmartDashboard.putNumber("Encoder Position", LeftPrimaryEncoder.getPosition());
+  SmartDashboard.putNumber("Encoder Position", LeftFollowerEncoder.getPosition());  
+  SmartDashboard.putNumber("Encoder Position", RightPrimaryEncoder.getPosition());
+  SmartDashboard.putNumber("Encoder Position", RightFollowerEncoder.getPosition());
+  
+  SmartDashboard.putNumber("Encoder Velocity", LeftPrimaryEncoder.getVelocity());
+  SmartDashboard.putNumber("Encoder Velocity", LeftFollowerEncoder.getVelocity());  
+  SmartDashboard.putNumber("Encoder Velocity", RightPrimaryEncoder.getVelocity());
+  SmartDashboard.putNumber("Encoder Velcoity", RightFollowerEncoder.getVelocity());
+  }
 
   @Override
   public void testInit() {

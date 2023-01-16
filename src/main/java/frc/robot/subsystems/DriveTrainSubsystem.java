@@ -4,12 +4,29 @@
 
 package frc.robot.subsystems;
 
+import frc.robot;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ExampleSubsystem extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
-  public ExampleSubsystem() {}
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+public class DriveTrainSubsystem extends SubsystemBase {
+  /** Creates a new ExampleSubsystem. */
+  public TankDriveSubsystem() {}
+  
+  
+  public void setSpeed(double LeftYSpeed, double RightYSpeed) {
+        // speed MUST be between -1.0 and 1.0
+        LeftYSpeed = LeftY;
+        RightYSpeed = RightY;
+    
+        LeftPrimary.set(LeftYSpeed);
+        RightPrimary.set(RightYSpeed);
+
+        System.out.println(leftYSpeed);
+    }
+  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
